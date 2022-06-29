@@ -18,6 +18,11 @@ The queue model of MQTT needs to be based on the light message queue, For the de
 The queue model of MQTT needs to be based on the light message queue feature ([RIP-28](https://github.com/apache/rocketmq/pull/3694)) of RocketMQ. RocketMQ has only supported this feature since version 4.9.3. Please ensure that the installed version of RocketMQ already supports this feature.
 
 For the quick start of light message queue, please refer to [Example_LMQ](https://github.com/apache/rocketmq/blob/develop/docs/cn/Example_LMQ.md) of RocketMQ. 
+For example, set the following parameters to true in broker.conf
+```
+enableLmq = true
+enableMultiDispatch = true
+```
 
 
 1. Clone
@@ -31,11 +36,11 @@ mvn clean package -DskipTests=true assembly:assembly
 ```
 3. Config
 ```shell
-cp -r  target/rocketmq-mqtt ~
+cp -r  target/rocketmq-mqtt/rocketmq-mqtt ~
 cd ~/rocketmq-mqtt
 cd conf
 ```
-Some important configuration items in the **service.conf** configuration file
+Some important configuration items in the **service.conf** configuration file 
 
 **Config Key** | **Instruction**
 ----- | ----  
@@ -44,6 +49,14 @@ secretKey   | used for auth
 NAMESRV_ADDR   | specify namesrv address
 eventNotifyRetryTopic   | notify event retry topic
 clientRetryTopic   | client retry topic
+
+
+And some configuration items in the**meta.conf** configuration file
+
+**Config Key** | **Instruction**
+----- | ----  
+allNodeAddress   |  meta kv all nodes ip, e.g. 192.168.0.1,192.168.0.2,192.168.0.3
+metaPort   | corresponding port, e.g. 25000
 
 4. CreateTopic
 
@@ -64,7 +77,12 @@ sh mqadmin updateKvConfig -s LMQ -k ALL_FIRST_TOPICS -v {topic1,topic2} -n {name
 ```shell
 sh mqadmin updateKvConfig  -s LMQ -k {topic} -v {topic/+}  -n {namesrv}
 ```
-6. Start Process
+6. start meta kv if necessary
+```shell
+cd bin
+sh meta.sh start
+```
+7. Start Process
 ```shell
 cd bin
 sh mqtt.sh start
